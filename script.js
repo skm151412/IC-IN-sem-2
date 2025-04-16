@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const correctAnswers = {
         q1: "C", // Head of the Council of Ministers
         q2: "B", // Chairman of Rajya Sabha
-        q3: "A", // Carrying on the business of the
+        q3: "A", // Carrying on the business of the 
         q4: "D", // The President
         q5: "C", // Through the Prime Minister and Council of Ministers
         q6: "B", // The President
@@ -172,14 +172,52 @@ document.addEventListener("DOMContentLoaded", function () {
         q148: "D", // Parliament determines PM's salary and allowances
         q149: "C", // Prime Minister presides over Council of Ministers meetings
         q150: "B", // Council of Ministers gets automatically dissolved if PM resigns
-
-
     };
+
+    // Add CSS for navigation button states
+    const navButtonStyles = document.createElement("style");
+    navButtonStyles.textContent = `
+        .right.box .btn {
+            /* Keep original styling but add transitions */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Not attempted - default state */
+        .right.box .btn.not-attempted {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+        
+        /* Attempted */
+        .right.box .btn.answered {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        /* Incorrect answer */
+        .right.box .btn.incorrect {
+            background-color: #FF5252;
+            color: white;
+        }
+        
+        /* Correct answer */
+        .right.box .btn.correct {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        /* Active question */
+        .right.box .btn.active {
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+    `;
+    document.head.appendChild(navButtonStyles);
 
     // Initialize question navigation buttons
     for (let i = 1; i <= totalQuestions; i++) {
         let btn = document.createElement("button");
-        btn.classList.add("btn");
+        btn.classList.add("btn", "not-attempted");
         btn.textContent = i;
         btn.addEventListener("click", function () {
             showQuestion(i - 1);
@@ -195,7 +233,9 @@ document.addEventListener("DOMContentLoaded", function () {
             userAnswers[questionName] = this.value;
 
             // Update the navigation button to show it's been answered
-            document.querySelectorAll('.right.box .btn')[questionNumber].classList.add('answered');
+            const navButton = document.querySelectorAll('.right.box .btn')[questionNumber];
+            navButton.classList.remove('not-attempted');
+            navButton.classList.add('answered');
         });
     });
 
@@ -209,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!quizSubmitted) {
             prevBtn.style.display = index === 0 ? "none" : "inline-block";
             nextBtn.style.display = index === questions.length - 1 ? "none" : "inline-block";
-            submitBtn.style.display = index === questions.length - 1 ? "block" : "none";
+            submitBtn.style.display = "block"; // Always show submit button
         } else {
             // After submission, always show prev/next buttons (except at boundaries)
             prevBtn.style.display = index === 0 ? "none" : "inline-block";
@@ -288,6 +328,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     statusText = "Incorrect";
                 }
             }
+
+            // Update the navigation button colors based on correctness
+            const navButton = document.querySelectorAll('.right.box .btn')[i-1];
+            navButton.classList.remove('not-attempted', 'answered', 'correct', 'incorrect');
+            navButton.classList.add(statusClass);
 
             const questionSummary = document.createElement("div");
             questionSummary.className = `question-result ${statusClass}`;
@@ -415,6 +460,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 border-radius: 5px;
                 border: 1px solid #ddd;
                 transition: all 0.3s ease;
+            }
+            
+            /* Add some spacing between submit button and next/prev buttons */
+            #submitBtn {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                display: block;
+                width: 100%;
+                padding: 10px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            
+            #submitBtn:hover {
+                background-color: #45a049;
             }
         `;
         document.head.appendChild(quizStyleEl);
